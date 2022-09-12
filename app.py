@@ -7,87 +7,14 @@ import time
 import pymysql
 import pytube
 import pymongo
+from functions_file import AWS_Cred, create_DB, create_Table_Home,to_db_home, to_db_stats
 
 client = pymongo.MongoClient("mongodb+srv://muzammil:123456Ab@cluster0.wyo7z.mongodb.net/?retryWrites=true&w=majority")
 db = client.test
-
 db = client["You_tube_Comments"]
 coll = db['Comments']
 
 app = Flask(__name__)
-
-
-def AWS_Cred():
-    """
-    This Function Is Used to Authenticate to DB on AWS, which Uses AWS RDB Service
-    :return:
-    """
-    mydb = pymysql.connect(host='youtube-db.canomptavg82.ap-south-1.rds.amazonaws.com', user='admin',
-                           password='admin123', database="youtube1")
-    cursor = mydb.cursor()
-    cursor.execute("select version()")
-    cursor.fetchone()
-
-    return cursor
-
-def create_DB(cursor,DB):
-    """
-    This Function is Used to Create DB"
-    :param cursor:
-    :return:
-    """
-
-    sql = "create database {}".format(DB)
-    cursor.execute(sql)
-    cursor.connection.commit()
-
-    sql = "use {}".format(DB)
-    cursor.execute(sql)
-    cursor.connection.commit()
-
-
-def create_Table_Home(cursor):
-    """
-    To create a required Table Home Table
-    :return:
-    """
-    sql = """
-    create table youtab
-    (
-    `Channel` varchar(200)
-    `Title` varchar(800),
-    `Views` varchar(25),
-    `Length` varchar(25),
-    `Video_url` varchar(200)
-    )
-    """
-    cursor.execute(sql)
-    cursor.connection.commit()
-
-    sql = '''show tables'''
-    cursor.execute(sql)
-    data = cursor.fetchall()
-    return data
-
-
-def to_db_home(cursor,lst_P):
-    """
-    Inserts Data in the Home Page (Info of all the 50 Channels)
-    :param cursor: Connection
-    :param lst_P: List
-    :return:
-    """
-    sql = 'INSERT INTO youtab (`Channel`,`Title`,`Views`, `Length`, `Video_url`) VALUES (%s,%s,%s,%s,%s)'
-    for i in lst_P:
-        cursor.execute(sql, (i["Channel"], i["Title"], i["Views"], i["Length"], i["Video_Url"]))
-    cursor.connection.commit()
-
-def to_db_stats(cursor,lst_P):
-    sql = 'INSERT INTO youtab_stat (`Title`,`Views`, `Date`, `Channel`,`Subscribers`,`Description`,`Likes`) VALUES (%s,%s,%s,%s,%s,%s,%s)'
-    for i in lst_P:
-        cursor.execute(sql, (
-        i["Title"], i["Views"], i["Date"], i["Channel"], i["Subscribers"], i["Description"], i["Likes"]))
-    cursor.connection.commit()
 
 
 @app.route("/", methods=['GET'])
