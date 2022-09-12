@@ -188,8 +188,8 @@ def scrape():
             except exceptions.NoSuchElementException:
                 print("Encontered processing Issue please try again")
 
-            # cursor = AWS_Cred()
-            # to_db_stats(cursor, stats)
+            cursor = AWS_Cred()
+            to_db_stats(cursor, stats)
 
             return render_template('basicinfo.html', stats1=mydict)
 
@@ -257,7 +257,7 @@ def comments():
                 mydict2 = {"User_name": user_name.text, "Comments": comments.text}
 
                 rev1.append(mydict2)
-            # coll.insert_many(rev1)
+            coll.insert_many(rev1)
 
             # named as "Table"
             return render_template('comments.html',rev1=rev1[0:(len(rev1)-1)])
