@@ -7,7 +7,10 @@ import time
 import pymysql
 import pytube
 import pymongo
-from functions_file import AWS_Cred, create_DB, create_Table_Home,to_db_home, to_db_stats
+from functions_file import AWS_Cred, to_db_home, to_db_stats
+import logging
+
+logging.basicConfig(filename="logfile.log",level=logging.DEBUG,format='%(levelname)s %(asctime)s %(name)s %(message)s')
 
 client = pymongo.MongoClient("mongodb+srv://muzammil:123456Ab@cluster0.wyo7z.mongodb.net/?retryWrites=true&w=majority")
 db = client.test
@@ -67,8 +70,8 @@ def index():
             return render_template('results.html', channel_data=channel_data[0:(len(channel_data)-1)])
 
         except Exception as e:
-            print('The Exception message is: ', e)
-            return 'something is wrong'
+            logging.exception('The Exception message is: ',e)
+            return
 
     else:
         return render_template('index.html')
@@ -113,7 +116,7 @@ def scrape():
                 stats.append(mydict)
 
             except exceptions.NoSuchElementException:
-                print("Encontered processing Issue please try again")
+                logging.debug("Encontered processing Issue please try again")
 
             cursor = AWS_Cred()
             to_db_stats(cursor, stats)
@@ -121,8 +124,8 @@ def scrape():
             return render_template('basicinfo.html', stats1=mydict)
 
         except Exception as e:
-            print('The Exception message is: ', e)
-            return 'something is wrong'
+            logging.debug('The Exception message is: ', e)
+            return
 
     else:
         return render_template('index.html')
@@ -191,8 +194,8 @@ def comments():
 
 
         except Exception as e:
-            print('The Exception message is: ', e)
-            return 'something is wrong'
+            logging.debug('The Exception message is: ', e)
+            return
 
 
     else:

@@ -21,3 +21,4 @@ lxml==4.9.1
 Werkzeug==2.2.2
 pymongo
 pymongo[srv]==3.11
+logging==0.4.9.6

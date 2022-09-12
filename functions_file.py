@@ -7,6 +7,8 @@ import time
 import pymysql
 # importing the module
 from pytube import YouTube
+import pandas as pd
+import csv
 
 
 def AWS_Cred():
@@ -36,29 +38,6 @@ def create_DB(cursor,DB):
     sql = "use {}".format(DB)
     cursor.execute(sql)
     cursor.connection.commit()
-
-
-def create_Table_Home():
-    """
-    To create a required Table
-    :return:
-    """
-    sql = """
-    create table youtab
-    (
-    `Title` varchar(800),
-    `Views` varchar(25),
-    `Length` varchar(25),
-    `Video_url` varchar(200)
-    )
-    """
-    cursor.execute(sql)
-    cursor.connection.commit()
-
-    sql = '''show tables'''
-    cursor.execute(sql)
-    data = cursor.fetchall()
-    return data
 
 
 
@@ -167,14 +146,24 @@ def to_download_videos():
     print('Task Completed!')
 
 
-# v = index(url)
-# print(v)
+if __name__ == "__main__":
 
-# b = value_check("youtab_stat",cursor)
-# print(b)
+    stats = value_check("youtab_stat", cursor)
 
-b = value_check("youtab",cursor)
-print(b)
 
-print(type(b))
+    lst_stat = []
+    for data in stats:
+        lst_stat.append(data)
+
+    df = pd.DataFrame(lst_stat, columns=["Title", "Views", "Date", "Channel", "Subscribers","Description","Likes"])
+    df.to_csv("YouTab_stat.csv")
+
+    comments = value_check("youtab", cursor)
+
+    lst = []
+    for data in comments:
+        lst.append(data)
+
+    df = pd.DataFrame(lst, columns=["Channel Name", "Video Title", "Number of Views", "Posted on", "Url"])
+    df.to_csv("YouTab.csv")
 
